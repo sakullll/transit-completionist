@@ -1,0 +1,13 @@
+.data-preview {
+  background: #e8f4f8;
+  border-left: 4px solid #003478;
+  padding: 1.5rem;
+  border-radius: 4px;
+  margin-top: 2rem;
+}
+
+.data-preview p {
+  margin: 0.5rem 0;
+  font-weight: 500;
+  color: #003478;
+}

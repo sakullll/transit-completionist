@@ -1,0 +1,39 @@
+.progress-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.progress-card h3 {
+  margin-bottom: 1rem;
+  color: #003478;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 24px;
+  background-color: #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #003478, #005a9c);
+  transition: width 0.3s ease;
+}
+
+.achievements {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.achievements h3 {
+  margin-bottom: 1rem;
+  color: #003478;
+}
