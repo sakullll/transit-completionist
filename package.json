@@ -1,0 +1,42 @@
+{
+  "name": "transit-completionist",
+  "version": "0.1.0",
+  "description": "A gamified transit exploration platform for the Puget Sound ORCA system",
+  "homepage": "https://sakullll.github.io/transit-completionist/",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.14.0",
+    "leaflet": "^1.9.4",
+    "react-leaflet": "^4.2.1",
+    "axios": "^1.4.0"
+  },
+  "devDependencies": {
+    "react-scripts": "5.0.1",
+    "gh-pages": "^6.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "deploy": "npm run build && gh-pages -d build",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
