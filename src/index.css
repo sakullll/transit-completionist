@@ -4,6 +4,18 @@
   box-sizing: border-box;
 }
 
+/* Exclude Leaflet from global resets */
+.leaflet-container,
+.leaflet-pane,
+.leaflet-layer,
+.leaflet-control,
+.leaflet-popup,
+.leaflet-tooltip {
+  box-sizing: content-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
