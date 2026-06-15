@@ -1,75 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import '../styles/Map.css';
 
-// Fix Leaflet default markers
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-});
-
 function Map({ transitData }) {
-  const [map, setMap] = useState(null);
+  const mapContainer = useRef(null);
+  const map = useRef(null);
   const [selectedRoute, setSelectedRoute] = useState(null);
-  const [routeLayers, setRouteLayers] = useState({});
 
-  // Initialize map
   useEffect(() => {
-    if (!transitData) return;
+    if (!transitData || !mapContainer.current || map.current) return;
 
-    const mapInstance = L.map('map').setView([47.6, -122.33], 11);
+    // Initialize map
+    map.current = L.map(mapContainer.current).setView([47.6, -122.33], 11);
 
-    // Add tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
       maxZoom: 19,
-    }).addTo(mapInstance);
+    }).addTo(map.current);
 
-    setMap(mapInstance);
-
-    return () => {
-      mapInstance.remove();
-    };
-  }, [transitData]);
-
-  // Draw routes
-  useEffect(() => {
-    if (!map || !transitData || !transitData.routes) return;
-
-    const newRouteLayers = {};
+    // Draw all routes
+    const routeLayers = {};
 
     transitData.routes.forEach((route) => {
       if (!route.stops || route.stops.length === 0) return;
 
-      // Create polyline for this route
+      // Get coordinates for this route
       const coordinates = route.stops
         .map((stopId) => transitData.stops[stopId])
         .filter((stop) => stop && stop.lat && stop.lng)
-        .map((stop) => [stop.lat, stop.lng]);
+        .map((stop) => [parseFloat(stop.lat), parseFloat(stop.lng)]);
 
       if (coordinates.length > 1) {
         const polyline = L.polyline(coordinates, {
           color: route.color || '#999999',
           weight: 3,
           opacity: 0.6,
-          smoothFactor: 1.0,
-          lineCap: 'round',
-          lineJoin: 'round',
         });
 
-        // Make route clickable
-        polyline.on('click', (e) => {
-          L.DomEvent.stopPropagation(e);
+        polyline.on('click', () => {
           setSelectedRoute(route);
-          polyline.setStyle({ opacity: 1, weight: 5 });
-          map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
         });
 
-        // Add hover effect
         polyline.on('mouseover', () => {
-          polyline.setStyle({ weight: 4, opacity: 0.8 });
+          polyline.setStyle({ weight: 5, opacity: 0.9 });
         });
 
         polyline.on('mouseout', () => {
@@ -78,39 +52,22 @@ function Map({ transitData }) {
           }
         });
 
-        polyline.addTo(map);
-        newRouteLayers[route.id] = polyline;
+        polyline.addTo(map.current);
+        routeLayers[route.id] = polyline;
       }
     });
-
-    setRouteLayers(newRouteLayers);
 
     return () => {
-      Object.values(newRouteLayers).forEach((layer) => {
-        map.removeLayer(layer);
-      });
-    };
-  }, [map, transitData]);
-
-  // Update styling when selection changes
-  useEffect(() => {
-    if (!transitData?.routes) return;
-
-    transitData.routes.forEach((route) => {
-      const layer = routeLayers[route.id];
-      if (layer) {
-        if (selectedRoute?.id === route.id) {
-          layer.setStyle({ opacity: 1, weight: 5 });
-        } else {
-          layer.setStyle({ opacity: 0.6, weight: 3 });
-        }
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
       }
-    });
-  }, [selectedRoute, routeLayers, transitData]);
+    };
+  }, [transitData, selectedRoute]);
 
   return (
-    <div className="map-container">
-      <div id="map" className="map"></div>
+    <div className="map-wrapper">
+      <div ref={mapContainer} className="map-container"></div>
       {selectedRoute && (
         <div className="route-panel">
           <button
