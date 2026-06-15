@@ -51,40 +51,61 @@ function Map({ transitData }) {
 
       if (coordinates.length > 1) {
         const polyline = L.polyline(coordinates, {
-          color: route.color,
+          color: route.color || '#999999',
           weight: 3,
-          opacity: 0.5,
+          opacity: 0.6,
           smoothFactor: 1.0,
+          lineCap: 'round',
+          lineJoin: 'round',
         });
 
-        polyline.on('click', () => {
+        // Make route clickable
+        polyline.on('click', (e) => {
+          L.DomEvent.stopPropagation(e);
           setSelectedRoute(route);
           polyline.setStyle({ opacity: 1, weight: 5 });
+          map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
         });
 
+        // Add hover effect
+        polyline.on('mouseover', () => {
+          polyline.setStyle({ weight: 4, opacity: 0.8 });
+        });
+
+        polyline.on('mouseout', () => {
+          if (selectedRoute?.id !== route.id) {
+            polyline.setStyle({ weight: 3, opacity: 0.6 });
+          }
+        });
+
+        polyline.addTo(map);
         newRouteLayers[route.id] = polyline;
       }
     });
 
-    // Add all routes to map
-    Object.values(newRouteLayers).forEach((layer) => layer.addTo(map));
     setRouteLayers(newRouteLayers);
 
     return () => {
-      Object.values(newRouteLayers).forEach((layer) => map.removeLayer(layer));
+      Object.values(newRouteLayers).forEach((layer) => {
+        map.removeLayer(layer);
+      });
     };
   }, [map, transitData]);
 
-  // Reset route styling when selection changes
+  // Update styling when selection changes
   useEffect(() => {
-    if (!selectedRoute) {
-      Object.entries(routeLayers).forEach(([routeId, layer]) => {
-        const route = transitData.routes.find((r) => r.id === routeId);
-        if (route) {
-          layer.setStyle({ opacity: 0.5, weight: 3 });
+    if (!transitData?.routes) return;
+
+    transitData.routes.forEach((route) => {
+      const layer = routeLayers[route.id];
+      if (layer) {
+        if (selectedRoute?.id === route.id) {
+          layer.setStyle({ opacity: 1, weight: 5 });
+        } else {
+          layer.setStyle({ opacity: 0.6, weight: 3 });
         }
-      });
-    }
+      }
+    });
   }, [selectedRoute, routeLayers, transitData]);
 
   return (
@@ -98,13 +119,13 @@ function Map({ transitData }) {
           >
             ✕
           </button>
-          <h3>{selectedRoute.shortName}</h3>
+          <h3>{selectedRoute.shortName || 'Route'}</h3>
           <p className="route-name">{selectedRoute.longName}</p>
           <div
             className="route-color"
-            style={{ backgroundColor: selectedRoute.color }}
+            style={{ backgroundColor: selectedRoute.color || '#999999' }}
           ></div>
-          <p className="stops-count">{selectedRoute.stops.length} stops</p>
+          <p className="stops-count">{selectedRoute.stops?.length || 0} stops</p>
         </div>
       )}
     </div>
