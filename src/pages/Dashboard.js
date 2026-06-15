@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Map from '../components/Map';
 import '../styles/Dashboard.css';
 
 function Dashboard() {
@@ -26,8 +27,8 @@ function Dashboard() {
         <nav className="nav">
           <h1>🚌 Transit Completionist</h1>
           <div>
-            <Link to="/">Home</Link>
-            <Link to="/profile">Profile</Link>
+            <Link to="/transit-completionist/">Home</Link>
+            <Link to="/transit-completionist/profile">Profile</Link>
           </div>
         </nav>
         <div className="container">
@@ -42,13 +43,16 @@ function Dashboard() {
       <nav className="nav">
         <h1>🚌 Transit Completionist</h1>
         <div>
-          <Link to="/">Home</Link>
-          <Link to="/profile">Profile</Link>
+          <Link to="/transit-completionist/">Home</Link>
+          <Link to="/transit-completionist/profile">Profile</Link>
         </div>
       </nav>
       <div className="container">
         <h2>Interactive Transit Map</h2>
-        <p>Coming soon: Interactive Leaflet map will display here</p>
+        <p>Click on any route line to see details</p>
+        
+        {transitData && <Map transitData={transitData} />}
+        
         {transitData && (
           <div className="data-preview">
             <p>✅ Transit data loaded: {transitData.routes?.length || 0} routes</p>
