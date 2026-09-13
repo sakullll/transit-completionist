@@ -15,7 +15,7 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 const routes = [];
 const stops = {};
 const stopTimes = {};
-let processedCount = 0;
+const shapePoints = {};
 
 console.log('📍 Parsing GTFS data...\n');
 
@@ -52,25 +52,54 @@ function parseStops() {
     })
     .on('end', () => {
       console.log(`✅ Stops parsed: ${Object.keys(stops).length}`);
+      parseShapes();
+    });
+}
+
+// Parse shape geometry for route paths.
+function parseShapes() {
+  fs.createReadStream(path.join(GTFS_INPUT_DIR, 'shapes.txt'))
+    .pipe(csv())
+    .on('data', (row) => {
+      const shapeId = row.shape_id;
+      if (!shapeId) return;
+
+      if (!shapePoints[shapeId]) {
+        shapePoints[shapeId] = [];
+      }
+
+      shapePoints[shapeId].push({
+        lat: parseFloat(row.shape_pt_lat),
+        lng: parseFloat(row.shape_pt_lon),
+        sequence: parseInt(row.shape_pt_sequence, 10) || 0,
+      });
+    })
+    .on('end', () => {
+      Object.keys(shapePoints).forEach((shapeId) => {
+        shapePoints[shapeId].sort((a, b) => a.sequence - b.sequence);
+      });
+
+      console.log(`✅ Shapes parsed: ${Object.keys(shapePoints).length}`);
       parseStopTimes();
     });
 }
 
-// Parse stop_times.txt to map stops to routes
+// Parse stop_times.txt to map stops to routes in GTFS stop order.
 function parseStopTimes() {
   fs.createReadStream(path.join(GTFS_INPUT_DIR, 'stop_times.txt'))
     .pipe(csv())
     .on('data', (row) => {
       const tripId = row.trip_id;
       const stopId = row.stop_id;
-      const stopSequence = parseInt(row.stop_sequence);
-      
+      const stopSequence = parseInt(row.stop_sequence, 10);
+
       if (!stopTimes[tripId]) {
         stopTimes[tripId] = [];
       }
+
       stopTimes[tripId].push({
         stopId,
-        sequence: stopSequence
+        sequence: Number.isFinite(stopSequence) ? stopSequence : Number.MAX_SAFE_INTEGER
       });
     })
     .on('end', () => {
@@ -79,38 +108,83 @@ function parseStopTimes() {
     });
 }
 
-// Parse trips.txt to connect trips to routes
+// Parse trips.txt to connect trips to routes while preserving stop order.
 function parseTrips() {
   const trips = {};
-  
+  const routeShapeIds = {};
+
   fs.createReadStream(path.join(GTFS_INPUT_DIR, 'trips.txt'))
     .pipe(csv())
     .on('data', (row) => {
-      trips[row.trip_id] = row.route_id;
+      const routeId = row.route_id;
+      const shapeId = row.shape_id || '';
+      const directionId = row.direction_id || '0';
+
+      if (!trips[row.trip_id]) {
+        trips[row.trip_id] = { routeId, shapeId, directionId };
+      }
+
+      if (shapeId && !routeShapeIds[routeId]) {
+        routeShapeIds[routeId] = shapeId;
+      }
     })
     .on('end', () => {
       console.log(`✅ Trips parsed: ${Object.keys(trips).length}`);
-      
-      // Map stops to routes
+
       const routeStops = {};
-      
-      routes.forEach(route => {
-        routeStops[route.id] = new Set();
+
+      routes.forEach((route) => {
+        routeStops[route.id] = { 0: new Map(), 1: new Map() };
       });
-      
-      Object.entries(trips).forEach(([tripId, routeId]) => {
-        if (stopTimes[tripId] && routeStops[routeId]) {
-          stopTimes[tripId].forEach(st => {
-            routeStops[routeId].add(st.stopId);
-          });
+
+      Object.entries(trips).forEach(([tripId, { routeId, shapeId, directionId }]) => {
+        if (!stopTimes[tripId] || !routeStops[routeId]) {
+          return;
+        }
+
+        const orderedStops = [...stopTimes[tripId]].sort((a, b) => a.sequence - b.sequence);
+
+        orderedStops.forEach(({ stopId, sequence }) => {
+          const directionKey = directionId === '1' ? '1' : '0';
+          if (!routeStops[routeId][directionKey].has(stopId)) {
+            routeStops[routeId][directionKey].set(stopId, { stopId, sequence });
+          }
+        });
+
+        if (shapeId && shapePoints[shapeId] && !routeShapeIds[routeId]) {
+          routeShapeIds[routeId] = shapeId;
         }
       });
-      
-      // Convert sets to arrays and enhance routes with stops
-      routes.forEach(route => {
-        route.stops = Array.from(routeStops[route.id] || []);
+
+      routes.forEach((route) => {
+        const directionMap = {};
+
+        ['0', '1'].forEach((directionKey) => {
+          const orderedStopIds = [...(routeStops[route.id]?.[directionKey]?.values() || [])]
+            .sort((a, b) => a.sequence - b.sequence)
+            .map(({ stopId }) => stopId);
+
+          if (orderedStopIds.length > 0) {
+            directionMap[directionKey] = orderedStopIds;
+          }
+        });
+
+        route.stops = [...new Set(Object.values(directionMap).flat())];
+        route.directions = Object.keys(directionMap).length > 0 ? directionMap : { 0: route.stops };
+
+        const shapeId = routeShapeIds[route.id];
+        const path = shapeId && shapePoints[shapeId]
+          ? shapePoints[shapeId]
+            .sort((a, b) => a.sequence - b.sequence)
+            .map(({ lat, lng }) => [lat, lng])
+          : route.stops
+            .map((stopId) => stops[stopId])
+            .filter((stop) => stop && Number.isFinite(stop.lat) && Number.isFinite(stop.lng))
+            .map(({ lat, lng }) => [lat, lng]);
+
+        route.path = path;
       });
-      
+
       saveData();
     });
 }
@@ -126,9 +200,9 @@ function saveData() {
       totalStops: Object.keys(stops).length
     }
   };
-  
+
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(data, null, 2));
-  
+
   console.log('\n✅ All data parsed successfully!');
   console.log(`📁 Saved to: ${OUTPUT_FILE}`);
   console.log(`\n📊 Summary:`);

@@ -37,3 +37,48 @@
   margin-bottom: 1rem;
   color: #003478;
 }
+
+.achievement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.achievement-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  background: #f8fbff;
+  border: 1px solid #dfeaf7;
+  border-radius: 8px;
+}
+
+.achievement-item strong {
+  color: #003478;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.achievement-item p {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.achievement-date-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #54657d;
+}
+
+.achievement-date-field input {
+  border: 1px solid #d8e3ef;
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  color: #003478;
+}

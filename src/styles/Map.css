@@ -23,8 +23,10 @@
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  max-width: 300px;
+  max-width: 360px;
   z-index: 1000;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .route-panel h3 {
@@ -51,6 +53,94 @@
   margin: 1rem 0 0 0;
   font-weight: bold;
   color: #003478;
+}
+
+.direction-toggle-group {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.direction-toggle {
+  flex: 1;
+  border: 1px solid #d8e3ef;
+  background: white;
+  color: #003478;
+  border-radius: 999px;
+  padding: 0.5rem 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.direction-toggle.active {
+  background: #003478;
+  color: white;
+  border-color: #003478;
+}
+
+.route-progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.9rem;
+  font-size: 0.9rem;
+  color: #003478;
+  font-weight: 700;
+}
+
+.route-action-row {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.route-action-button {
+  width: 100%;
+  background: #003478;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.route-action-button.secondary {
+  background: #eef3fa;
+  color: #003478;
+  border: 1px solid #d8e3ef;
+}
+
+.stop-list {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.stop-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+  font-size: 0.9rem;
+  padding: 0.25rem 0;
+}
+
+.stop-item input {
+  accent-color: #003478;
+}
+
+.partial-progress {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e7edf4;
+  color: #003478;
+  font-size: 0.85rem;
+  line-height: 1.4;
 }
 
 .close-btn {

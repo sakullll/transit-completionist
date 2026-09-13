@@ -15,23 +15,23 @@ function Home() {
       <div className="container">
         <div className="hero">
           <h2>Welcome to Transit Completionist</h2>
-          <p>Track every line and stop on the Puget Sound ORCA system</p>
+          <p>Track every bus, rail, and ferry line in the Puget Sound transit network.</p>
           <Link to="/dashboard" className="cta-button">
-            Start Exploring →
+            Open Progress Dashboard →
           </Link>
         </div>
         <div className="features">
           <div className="feature">
-            <h3>🗺️ Interactive Map</h3>
-            <p>Explore all ORCA transit lines on an interactive scratch-off map</p>
+            <h3>📊 Route Progress</h3>
+            <p>See every line and its completion percentage in a single progress ledger.</p>
           </div>
           <div className="feature">
-            <h3>📊 Progress Tracking</h3>
-            <p>See your completion percentage by agency and line</p>
+            <h3>🧭 Route Explorer</h3>
+            <p>Search any route by name and jump straight into its stop tracking panel.</p>
           </div>
           <div className="feature">
             <h3>🏆 Achievements</h3>
-            <p>Unlock badges as you explore more of the transit system</p>
+            <p>Celebrate fully completed lines and keep track of your historical transit milestones.</p>
           </div>
         </div>
       </div>
