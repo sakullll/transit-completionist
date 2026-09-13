@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/transit-completionist/static/css/main.26653bc5.css",
-    "main.js": "/transit-completionist/static/js/main.ff6efce0.js",
+    "main.css": "/transit-completionist/static/css/main.411dedc8.css",
+    "main.js": "/transit-completionist/static/js/main.bd369ee2.js",
     "index.html": "/transit-completionist/index.html",
-    "main.26653bc5.css.map": "/transit-completionist/static/css/main.26653bc5.css.map",
-    "main.ff6efce0.js.map": "/transit-completionist/static/js/main.ff6efce0.js.map"
+    "main.411dedc8.css.map": "/transit-completionist/static/css/main.411dedc8.css.map",
+    "main.bd369ee2.js.map": "/transit-completionist/static/js/main.bd369ee2.js.map"
   },
   "entrypoints": [
-    "static/css/main.26653bc5.css",
-    "static/js/main.ff6efce0.js"
+    "static/css/main.411dedc8.css",
+    "static/js/main.bd369ee2.js"
   ]
 }
