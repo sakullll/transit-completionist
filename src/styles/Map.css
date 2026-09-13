@@ -17,16 +17,17 @@
 
 .route-panel {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
+  bottom: 16px;
+  right: 16px;
   background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
+  padding: 1rem 1rem 1.25rem;
+  border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  max-width: 360px;
+  width: min(92vw, 360px);
   z-index: 1000;
-  max-height: 70vh;
+  max-height: 72vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .route-panel h3 {
@@ -145,24 +146,65 @@
 
 .close-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 52, 120, 0.06);
   border: none;
-  font-size: 1.5rem;
+  border-radius: 999px;
+  font-size: 1.3rem;
   cursor: pointer;
   color: #666;
   padding: 0;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.3s;
+  transition: color 0.2s ease, background 0.2s ease;
+  z-index: 2;
 }
 
-.close-btn:hover {
+.close-btn:hover,
+.close-btn:active {
   color: #003478;
+  background: rgba(0, 52, 120, 0.1);
+}
+
+@media (max-width: 640px) {
+  .map-container {
+    height: 420px;
+  }
+
+  .route-panel {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    max-width: none;
+    max-height: 62vh;
+    padding: 0.85rem 0.85rem 1rem;
+  }
+
+  .route-panel h3 {
+    font-size: 1.2rem;
+    padding-right: 2rem;
+  }
+
+  .direction-toggle-group {
+    gap: 0.35rem;
+  }
+
+  .route-action-row {
+    gap: 0.5rem;
+  }
+
+  .route-action-button {
+    padding: 0.75rem 0.9rem;
+  }
+
+  .stop-item {
+    font-size: 0.85rem;
+  }
 }
 
 /* Leaflet overrides */

@@ -752,10 +752,21 @@ function Dashboard() {
           <div className="reset-all-panel">
             <button
               className={`reset-all-button ${resetHoldActive ? 'is-holding' : ''}`}
-              onPointerDown={beginResetHold}
+              onPointerDown={(event) => {
+                event.preventDefault();
+                beginResetHold();
+              }}
               onPointerUp={cancelResetHold}
               onPointerLeave={cancelResetHold}
               onPointerCancel={cancelResetHold}
+              onTouchStart={(event) => {
+                event.preventDefault();
+                beginResetHold();
+              }}
+              onTouchEnd={cancelResetHold}
+              onTouchCancel={cancelResetHold}
+              onContextMenu={(event) => event.preventDefault()}
+              aria-label="Reset all progress"
             >
               <span>{resetHoldActive ? 'Hold to clear all progress' : 'Reset all progress'}</span>
               <span className="reset-all-hold-bar">
