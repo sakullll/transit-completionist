@@ -1,0 +1,10 @@
+{
+  "name": "Transit Completionist",
+  "short_name": "Transit",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#003478",
+  "description": "Track your transit route progress across Seattle and beyond.",
+  "icons": []
+}
